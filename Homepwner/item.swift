@@ -1,0 +1,68 @@
+//
+//  item.swift
+//  Homepwner
+//
+//  Created by CSUFTitan on 2/17/20.
+//  Copyright © 2020 Aiden Hadisi. All rights reserved.
+//
+
+import UIKit
+class Item: NSObject, NSCoding{
+    var name: String
+    var valueInDollars: Int
+    var serialNumber: String?
+    var dateCreated: Date
+    let itemKey: String
+
+    
+    init(name: String, serialNumber: String?, valueInDollars: Int) {
+        self.name = name
+        self.valueInDollars = valueInDollars
+        self.serialNumber = serialNumber
+        self.dateCreated = Date()
+        self.itemKey = UUID().uuidString
+
+        
+        super.init()
+    }
+    
+    convenience init(random: Bool = false) {
+        var name = ""
+        var serialNumber: String? = nil
+        var valueInDollars = 0
+        if random {
+            let adjectives = ["Shiny", "Black", "Smooth", "Expensive"]
+            let nouns = ["Photon torpedos", "phasers", "tricorders", "communicator"]
+            var idx = arc4random_uniform(UInt32(adjectives.count))
+            let randomAdjective = adjectives[Int(idx)]
+            
+            idx = arc4random_uniform(UInt32(nouns.count))
+            let randomNoun = nouns[Int(idx)]
+            
+            name = "\(randomAdjective) \(randomNoun)"
+            valueInDollars = Int(arc4random_uniform(100))
+            serialNumber = UUID().uuidString.components(separatedBy: "-").first!
+            
+            
+        }
+        self.init(name: name, serialNumber: serialNumber, valueInDollars: valueInDollars)
+    }
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(name, forKey: "name")
+        aCoder.encode(dateCreated, forKey: "dateCreated")
+        aCoder.encode(itemKey, forKey: "itemKey")
+        aCoder.encode(serialNumber, forKey: "serialNumber")
+
+        aCoder.encode(valueInDollars, forKey: "valueInDollars")
+    }
+    required init(coder aDecoder: NSCoder) {
+        name = aDecoder.decodeObject(forKey: "name") as! String
+        dateCreated = aDecoder.decodeObject(forKey: "dateCreated") as! Date
+        itemKey = aDecoder.decodeObject(forKey: "itemKey") as! String
+        serialNumber = aDecoder.decodeObject(forKey: "serialNumber") as! String?
+
+        valueInDollars = aDecoder.decodeInteger(forKey: "valueInDollars")
+
+        super.init()
+    }
+}
